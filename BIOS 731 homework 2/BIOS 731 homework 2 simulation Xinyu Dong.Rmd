@@ -1,0 +1,11 @@
+---
+title: "BIOS 731 homework 2"
+author: "Xinyu Dong"
+date: "2026-02-09"
+output: pdf_document
+---
+
+```{r}
+
+```
+

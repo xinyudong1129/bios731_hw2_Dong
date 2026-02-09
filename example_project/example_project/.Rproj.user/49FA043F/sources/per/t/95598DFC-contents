@@ -1,0 +1,74 @@
+---
+title: "Exploratory analysis"
+author: "Julia"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+hitheme: tomorrow
+highlighter: highlight.js
+---
+
+```{r setup, include=FALSE}
+# load libraries
+library(tidyverse)
+library(here)
+
+knitr::opts_chunk$set(echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 9,
+  fig.height = 4,
+  fig.path = "../results/"
+)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+```
+
+## Overview
+
+This document is for exploratory analysis of the two datasets.
+
+## Load data
+
+```{r}
+list.files(here::here("source"))
+source(here::here("source", "01_data_download.R"))
+```
+
+
+## Longitudinal data
+
+```{r}
+dim(covid)
+```
+
+
+```{r}
+names(covid)
+```
+
+```{r}
+range(covid$pcr_conc_lin)
+```
+
+
+```{r}
+str(covid)
+```
+
+
+## Crossectional data data
+
+```{r}
+dim(counties)
+```
+
+
+```{r}
+names(counties)
+```
+
+

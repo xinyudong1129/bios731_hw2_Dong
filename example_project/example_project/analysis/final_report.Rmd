@@ -1,0 +1,93 @@
+---
+title: "Analysis of SARS-CoV-2 concentration in wastewater"
+author: "Julia Wrobel"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+params:
+  state: "nc"
+  download_raw_data: FALSE
+hitheme: tomorrow
+highlighter: highlight.js
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+
+knitr::opts_chunk$set(echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 9,
+  fig.height = 6,
+  fig.path = "../results/"
+)
+
+theme_set(theme_bw() + theme(legend.position = "bottom"))
+```
+
+
+## Overview
+
+
+This file produces a report of the wastewater concentration of SARS-CoV-2 in different counties in Georgia.
+
+## Download data
+
+
+```{r}
+source(here("source", "01_data_download.R"))
+```
+
+
+
+## Clean data 
+
+
+
+```{r}
+source(here("source", "02_data_cleaning.R")) 
+```
+
+
+## Analyze data
+
+
+
+```{r}
+source(here("source", "03_data_analysis.R"))
+```
+
+```{r}
+covid_table %>%
+  knitr::kable()
+```
+
+
+
+
+
+# Visualize data
+
+
+
+```{r}
+source(here("source", "04_data_visualization.R"))
+```
+
+
+```{r, figure1}
+plot1
+```
+
+
+
+
+```{r, figure2, fig.height = 10}
+plot2
+```
+
+

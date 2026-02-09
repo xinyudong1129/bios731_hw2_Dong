@@ -1,0 +1,224 @@
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ git init
+Reinitialized existing Git repository in C:/Users/xdong63/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose Monitoring/test_project/.git/
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ git status
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        .gitignore
+        test_project.Rproj
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ git add --a
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ git status
+On branch master
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached <file>..." to unstage)
+        new file:   .gitignore
+        new file:   test_project.Rproj
+
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ git commit -m "commit message: initialized repo"
+[master (root-commit) a4cc513] commit message: initialized repo
+ Committer: Dong <XDONG63@emory.edu>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 17 insertions(+)
+ create mode 100644 .gitignore
+ create mode 100644 test_project.Rproj
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ git status
+On branch master
+nothing to commit, working tree clean
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ makdir data
+bash: makdir: command not found
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ mkdir data
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ git status
+On branch master
+nothing to commit, working tree clean
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ git status
+On branch master
+nothing to commit, working tree clean
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ ls
+data/  test_project.Rproj
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ ls -a
+./  ../  .git/  .gitignore  .Rproj.user/  data/  test_project.Rproj
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ touch .gitignore
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ ls -a
+./  ../  .git/  .gitignore  .Rproj.user/  data/  test_project.Rproj
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ open .gitignore
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ ls
+data/  test_project.Rproj
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ ls -a
+./  ../  .git/  .gitignore  .Rproj.user/  data/  test_project.Rproj
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   .gitignore
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ ^C
+
+# this force exists a line
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ touch code.R
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ open code.R
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ git commit -m "added new file code.R"
+[master 7c50ab3] added new file code.R
+ Committer: Dong <XDONG63@emory.edu>
+Your name and email address were configured automatically based
+on your username and hostname. Please check that they are accurate.
+You can suppress this message by setting them explicitly. Run the
+following command and follow the instructions in your editor to edit
+your configuration file:
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
+
+ 2 files changed, 3 insertions(+)
+ create mode 100644 code.R
+
+# the touch command creates a file, and the open command opens the file and gives a pop-up window
+
+# *.html written in the .gitignore file ignores all updates from files ending in .html
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ git remote add origin https://github.com/xinyudong1129/BIOS-731.git
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (master)
+$ git branch -M main
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (main)
+$ git push -u origin main
+info: please complete authentication in your browser...
+Enumerating objects: 8, done.
+Counting objects: 100% (8/8), done.
+Delta compression using up to 22 threads
+Compressing objects: 100% (5/5), done.
+Writing objects: 100% (8/8), 823 bytes | 274.00 KiB/s, done.
+Total 8 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+To https://github.com/xinyudong1129/BIOS-731.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+
+
+# everytime you make changes and are ready for a new commit:
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (main)
+$ git pull
+Already up to date.
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (main)
+$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (main)
+$ git add --a
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (main)
+$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+nothing to commit, working tree clean
+
+XDONG63@PHDFNSQSW3 MINGW64 ~/OneDrive - Emory/Desktop/Fall 2024 Emory/Research Continuous Glucose
+Monitoring/test_project (main)
+$ git push
+Everything up-to-date
+
+# touch .gitkeep
+# this is a way to keep an empty folder and track everything on github
