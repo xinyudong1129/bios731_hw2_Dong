@@ -1,4 +1,4 @@
-# source/summarize_results.R
+# simulations/summarize_results.R
 # Summarize simulation outputs into bias/coverage/SE distribution/time metrics
 
 library(dplyr)

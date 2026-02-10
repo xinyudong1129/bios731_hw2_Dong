@@ -1,4 +1,4 @@
-# source/sim_functions.R
+# simulations/simulation_code.R
 
 # This file defines:
 #  - Data-generating mechanism for linear regression with treatment indicator
@@ -6,186 +6,197 @@
 #  - Nonparametric bootstrap percentile CI
 #  - Nonparametric bootstrap t CI (double bootstrap for SE*)
 
-
 library(stats)
-# n: Integer sample size.
-# beta_trt: True treatment effect.
-# beta0: Intercept (default 0).
-# err_type: "normal" or "t3".
-# sigma2: Target error variance (default 2).
-# output: data.frame with columns y, trt
-sim_one_dataset <- function(n,
-                            beta_trt,
-                            beta0 = 0,
-                            err_type = c("normal", "t3"),
-                            sigma2 = 2) {
+library(tibble)
+
+# ------------------------------------------------
+# Data-generating mechanism
+# ------------------------------------------------
+# n: Integer sample size
+# beta_treat: True treatment effect
+# error_distr: "normal" or "t3"
+# output: tibble with columns y (outcome), x (binary treatment indicator)
+get_simdata <- function(n, beta_treat, error_distr = c("normal", "t3")) {
+  error_distr <- match.arg(error_distr)
   
-  err_type <- match.arg(err_type)
+  # Fixed parameters
+  beta0  <- 1
+  p_treat <- 0.5
+  sigma2 <- 2
+  v <- 3
   
-  # Balanced treatment assignment for stability at small n
-  trt <- rbinom(n, size = 1, prob = 0.5)
-  
-  if (err_type == "normal") {
-    eps <- rnorm(n, mean = 0, sd = sqrt(sigma2))
-  } else {
-    # Heavy-tailed: t_{nu=3} scaled to have variance sigma2
-    # If u ~ t_nu, Var(u)=nu/(nu-2). we want Var(eps)=sigma2 => eps = u * sqrt(sigma2 * (nu-2)/nu)
-    nu <- 3
-    u <- rt(n, df = nu)
-    scale_fac <- sqrt(sigma2 * (nu - 2) / nu)
-    eps <- u * scale_fac
+  # Binary treatment indicator (0/1 numeric)
+  x <- rbinom(n, size = 1, prob = p_treat)
+  if (length(unique(x)) < 2) {
+    # force at least one treated and one control
+    x[1] <- 1 - x[1]
   }
   
-  y <- beta0 + beta_trt * trt + eps
-  data.frame(y = y, trt = trt)
+  # Error distribution
+  epsilon <- switch(
+    error_distr,
+    normal = rnorm(n, mean = 0, sd = sqrt(sigma2)),
+    t3 = {
+      u <- rt(n, df = v)
+      u * sqrt(sigma2 * (v - 2) / v)
+    }
+  )
+  
+  # Outcome
+  y <- beta0 + beta_treat * x + epsilon
+  
+  tibble::tibble(
+    y = y,
+    x = x
+  )
 }
 
-# Fit linear model and extract treatment estimate and SE
-
-# dat: data.frame with y and trt
+# ------------------------------------------------
+# Fit linear model and extract treatment estimate
+# ------------------------------------------------
+# dat: tibble with columns y, x
 # output: list(beta_hat, se_hat)
-
 fit_lm_trt <- function(dat) {
-  fit <- lm(y ~ trt, data = dat)
+  fit <- lm(y ~ x, data = dat)
   coefs <- summary(fit)$coefficients
-  beta_hat <- unname(coefs["trt", "Estimate"])
-  se_hat   <- unname(coefs["trt", "Std. Error"])
-  list(beta_hat = beta_hat, se_hat = se_hat)
+  get_beta_hat <- function(fit, term = "x") {
+    cf <- coef(fit)
+    unname(cf[term])
+  }
+  
+  get_se_hat <- function(fit, term = "x") {
+    V <- vcov(fit)
+    sqrt(unname(V[term, term]))
+  }
+  list(beta_hat = get_beta_hat(fit, term = "x"), se_hat = get_se_hat(fit, term = "x"))
 }
 
-# Wald 95% CI for beta_trt
-# beta_hat: Estimate
-# se_hat: Standard error estimate
-# alpha: 1 - confidence level (default 0.05)
-# output: numeric vector c(lower, upper)
+# ------------------------------------------------
+# Wald CI
+# ------------------------------------------------
 wald_ci <- function(beta_hat, se_hat, alpha = 0.05) {
-  z <- qnorm(1 - alpha/2)
-  c(beta_hat - z * se_hat, beta_hat + z * se_hat)
+  z <- qnorm(1 - alpha / 2)
+  c(beta_hat - z * se_hat,
+    beta_hat + z * se_hat)
 }
 
-# Nonparametric bootstrap percentile CI
-
-# dat: Original data
-# B: Outer bootstrap reps (default 500)
-# alpha: 1 - confidence level
-# output: list(ci=c(lower, upper), boot_est=vector)
+# ------------------------------------------------
+# Bootstrap percentile CI
+# ------------------------------------------------
 boot_percentile_ci <- function(dat, B = 500, alpha = 0.05) {
   n <- nrow(dat)
   boot_est <- numeric(B)
+  
   for (b in seq_len(B)) {
-    idx <- sample.int(n, size = n, replace = TRUE)
+    idx <- c(
+      sample(which(dat$x == 0), replace = TRUE),
+      sample(which(dat$x == 1), replace = TRUE)
+    )
     boot_est[b] <- fit_lm_trt(dat[idx, , drop = FALSE])$beta_hat
   }
-  qs <- quantile(boot_est, probs = c(alpha/2, 1 - alpha/2), names = FALSE, type = 6)
+  
+  qs <- quantile(
+    boot_est,
+    probs = c(alpha/2, 1 - alpha/2),
+    na.rm = TRUE,
+    names = FALSE
+  )
+  
   list(ci = as.numeric(qs), boot_est = boot_est)
 }
 
-# Bootstrap-t CI (double bootstrap for SE*)
-
-# For each outer bootstrap sample b:
-#   1) compute beta_hat_star(b)
-#   2) compute se_star(b) via INNER bootstrap on that outer sample
-#   3) compute t_star(b) = (beta_hat_star(b) - beta_hat) / se_star(b)
-
-# CI: [ beta_hat - t_{1-alpha/2}^* * se_hat , beta_hat - t_{alpha/2}^* * se_hat ]
-# where t_q^* is the empirical quantile of t_star.
-
-# dat: Original data
-# B: Outer bootstrap reps (default 500)
-# B_inner: Inner bootstrap reps (default 100)
-# alpha: 1 - confidence level
-# output: list(ci=c(lower, upper), t_star=vector, boot_est=vector)
+# ------------------------------------------------
+# Bootstrap-t CI (double bootstrap)
+# ------------------------------------------------
 boot_t_ci <- function(dat, B = 500, B_inner = 100, alpha = 0.05) {
-  n <- nrow(dat)
-  
-  # Original sample estimates
   orig <- fit_lm_trt(dat)
   beta_hat <- orig$beta_hat
   se_hat   <- orig$se_hat
   
-  boot_est <- numeric(B)
-  t_star   <- numeric(B)
+  t_star <- numeric(B)
   
   for (b in seq_len(B)) {
-    idx_outer <- sample.int(n, size = n, replace = TRUE)
+    
+    # Outer bootstrap (stratified to keep both groups)
+    idx_outer <- c(
+      sample(which(dat$x == 0), replace = TRUE),
+      sample(which(dat$x == 1), replace = TRUE)
+    )
     dat_outer <- dat[idx_outer, , drop = FALSE]
     
-    # Outer estimate
     out_fit <- fit_lm_trt(dat_outer)
     beta_hat_star <- out_fit$beta_hat
-    boot_est[b] <- beta_hat_star
     
-    # Inner bootstrap to estimate SE* for this outer sample
+    # Inner bootstrap
     inner_est <- numeric(B_inner)
     for (j in seq_len(B_inner)) {
-      idx_inner <- sample.int(n, size = n, replace = TRUE)
+      idx_inner <- c(
+        sample(which(dat_outer$x == 0), replace = TRUE),
+        sample(which(dat_outer$x == 1), replace = TRUE)
+      )
       dat_inner <- dat_outer[idx_inner, , drop = FALSE]
       inner_est[j] <- fit_lm_trt(dat_inner)$beta_hat
     }
-    se_star <- sd(inner_est)
     
-    # Guard against degenerate SE* (can happen when n is very small)
-    if (is.na(se_star) || se_star <= 0) {
+    se_star <- sd(inner_est, na.rm = TRUE)
+    
+    if (!is.finite(se_star) || se_star <= 0 ||
+        !is.finite(beta_hat_star) || !is.finite(beta_hat)) {
       t_star[b] <- NA_real_
     } else {
       t_star[b] <- (beta_hat_star - beta_hat) / se_star
     }
   }
   
-  # Remove NA t* if any
+  # ---- THIS is the line that prevents the crash ----
   t_star_clean <- t_star[is.finite(t_star)]
-  if (length(t_star_clean) < max(10, 0.8 * B)) {
-    warning("Many NA/inf t* values; bootstrap-t CI may be unstable for this dataset.")
+  if (length(t_star_clean) < 20) {
+    return(list(ci = c(NA_real_, NA_real_), t_star = t_star))
   }
   
-  tq <- quantile(t_star_clean, probs = c(alpha/2, 1 - alpha/2), names = FALSE, type = 6)
+  tq <- quantile(t_star_clean,
+                 probs = c(alpha/2, 1 - alpha/2),
+                 names = FALSE, type = 6)
   
-  # Note the 'minus' form
   ci <- c(beta_hat - tq[2] * se_hat,
           beta_hat - tq[1] * se_hat)
   
-  list(ci = as.numeric(ci), t_star = t_star, boot_est = boot_est)
+  list(ci = ci, t_star = t_star)
 }
 
-# Run one Monte Carlo replication for one scenario
-
-# n: Sample size
-# beta_trt: True treatment effect
-# err_type: "normal" or "t3"
-# B: Outer bootstrap reps
-# B_inner: Inner bootstrap reps
-# alpha CI level complement (0.05 for 95% CI)
-# output: named list with point estimate, se, CIs, and timing
-run_one_rep <- function(n, beta_trt, err_type,
+# ------------------------------------------------
+# Run one Monte Carlo replication
+# ------------------------------------------------
+run_one_rep <- function(n, beta_treat, error_distr,
                         B = 500, B_inner = 100, alpha = 0.05) {
   
-  dat <- sim_one_dataset(n = n, beta_trt = beta_trt, err_type = err_type)
+  dat <- get_simdata(n = n, beta_treat = beta_treat,
+                     error_distr = error_distr)
   
-  # Point estimate + SE
   fit <- fit_lm_trt(dat)
   beta_hat <- fit$beta_hat
   se_hat   <- fit$se_hat
   
-  # Wald CI
+  # Wald
   t0 <- proc.time()[3]
-  ci_wald <- wald_ci(beta_hat, se_hat, alpha = alpha)
+  ci_wald <- wald_ci(beta_hat, se_hat, alpha)
   time_wald <- proc.time()[3] - t0
   
-  # Bootstrap percentile CI
+  # Bootstrap percentile
   t0 <- proc.time()[3]
   bp <- boot_percentile_ci(dat, B = B, alpha = alpha)
   ci_pct <- bp$ci
   time_pct <- proc.time()[3] - t0
   
-  # Bootstrap-t CI
+  # Bootstrap-t
   t0 <- proc.time()[3]
   bt <- boot_t_ci(dat, B = B, B_inner = B_inner, alpha = alpha)
   ci_t <- bt$ci
   time_t <- proc.time()[3] - t0
   
-  list(
+  tibble::tibble(
     beta_hat = beta_hat,
-    se_hat = se_hat,
+    se_hat   = se_hat,
     ci_wald_l = ci_wald[1], ci_wald_u = ci_wald[2],
     ci_pct_l  = ci_pct[1],  ci_pct_u  = ci_pct[2],
     ci_t_l    = ci_t[1],    ci_t_u    = ci_t[2],
