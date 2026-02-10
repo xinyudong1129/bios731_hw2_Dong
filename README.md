@@ -13,7 +13,7 @@ This repository is organized to support a fully reproducible Monte Carlo simulat
     Knitted PDF output of the final report.  
   - Auto-generated folders (e.g., `final_report_hw2_Xinyu_Dong_files/`) are created by R Markdown during knitting and are not part of the core workflow.
 
-- `source/` : Master scripts and reusable plotting/summarization utilities
+- `simulations/` : Master scripts and reusable plotting/summarization utilities
   - `simulation_code.R`  
     Defines the data-generating process, model fitting, and confidence interval construction methods (Wald CI, bootstrap percentile CI, bootstrap-\(t\) CI), as well as a single Monte Carlo replication wrapper.  
   - `make_plots.R`  
@@ -22,7 +22,7 @@ This repository is organized to support a fully reproducible Monte Carlo simulat
     Contains functions to compute performance metrics across Monte Carlo replications (bias, empirical coverage, SE distributions, computation time summaries).  
   - These scripts are sourced by the final report to ensure all results and figures are generated reproducibly from the saved simulation outputs.
 
-- `simulations/` : Core simulation code and data-generating mechanisms  
+- `source/` : Core simulation code and data-generating mechanisms  
   - `run_simulations.R`  
     Master script that runs the full factorial simulation design across all combinations of sample size, true treatment effect, and error distribution. This script generates and saves scenario-wise results to `data/` and produces the combined results object used by the final report.
 
