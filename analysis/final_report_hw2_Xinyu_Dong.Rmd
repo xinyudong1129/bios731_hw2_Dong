@@ -144,7 +144,7 @@ include our plots:
 
 1. coverage probability
 
-```{r, fig.show='hide'}
+```{r}
 p_cov <- plot_coverage(res)
 ggsave(
   filename = here("figures", "coverage_by_method.png"),
@@ -159,7 +159,7 @@ This figure shows the empirical coverage probabilities of nominal 95\% confidenc
 
 2. bias
 
-```{r, fig.show='hide'}
+```{r}
 p_bias <- plot_bias(res)
 ggsave(
   filename = here("figures", "bias_by_scenario.png"),
@@ -174,7 +174,7 @@ This figure reports the Monte Carlo bias of the estimator, defined as $\mathbb{E
 
 3. estimated se of beta_hat
 
-```{r, fig.show='hide'}
+```{r}
 p_se <- plot_se_dist(res)
 ggsave(
   filename = here("figures", "se_distribution.png"),
@@ -191,7 +191,7 @@ This figure displays the distribution of estimated standard errors of $\hat{\bet
 
 4. Computation Time
 
-```{r, fig.show='hide'}
+```{r}
 p_time <- plot_time(res)
 ggsave(
   filename = here("figures", "time_by_method.png"),
