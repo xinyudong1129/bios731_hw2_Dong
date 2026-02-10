@@ -1,0 +1,74 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+trimmed_mean <- function(y, trim = 0.10) {
+  mean(y, trim = trim)
+}
+
+boot_trimmed_mean <- function(y, B = 10000, trim = 0.10, seed = 123) {
+  if (!is.null(seed)) set.seed(seed)
+  n <- length(y)
+
+  # observed statistic
+  t0 <- trimmed_mean(y, trim = trim)
+
+  ## ---- Nonparametric bootstrap (re-sample from empirical dist)
+  t_np <- replicate(B, {
+    yb <- sample(y, size = n, replace = TRUE)
+    trimmed_mean(yb, trim = trim)
+  })
+  se_np <- sd(t_np)
+  ## ---- Parametric bootstrap (assume Normal, fit mu,sigma by MLE)
+  mu_hat <- mean(y)
+  # MLE sigma for Normal uses 1/n 
+  sigma_hat_mle <- sqrt(mean((y - mu_hat)^2))
+
+  t_par <- replicate(B, {
+    yb <- rnorm(n, mean = mu_hat, sd = sigma_hat_mle)
+    trimmed_mean(yb, trim = trim)
+  })
+  se_par <- sd(t_par)
+
+  list(
+    n = n, trim = trim, B = B,
+    t0 = t0,
+    se_nonparam = se_np,
+    se_param = se_par,
+    boot_nonparam = t_np,
+    boot_param = t_par,
+    mu_hat = mu_hat,
+    sigma_hat_mle = sigma_hat_mle
+  )
+}
+
+
+
+set.seed(1)
+n <- 250
+y <- rnorm(n, mean = 2, sd = 3)
+
+res <- boot_trimmed_mean(y, B = 10000, trim = 0.10, seed = 123)
+
+cat("Observed 10% trimmed mean:", res$t0, "\n")
+cat("Bootstrap SE (nonparam):   ", res$se_nonparam, "\n")
+cat("Bootstrap SE (parametric): ", res$se_param, "\n")
+
+```
+
+```{r}
+hist(res$boot_nonparam, breaks = 40, main = "Bootstrap distributions", col = rgb(0.2, 0.4, 1, 0.4), xlab = "10% trimmed mean", border = "white")
+hist(res$boot_param, breaks = 40, add = TRUE, col = rgb(1, 0.3, 0.3, 0.4), border = "white")
+legend("topright",
+       legend = c("Nonparametric", "Parametric"),
+       fill = c(rgb(0.2,0.4,1,0.4), rgb(1,0.3,0.3,0.4)),
+       bty = "n")
+```
+
+```{r}
+# bootstrap t-intervals
+
+
+```
