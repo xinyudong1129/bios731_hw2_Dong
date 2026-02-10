@@ -1,0 +1,13 @@
+# Ignore simulation outputs (can be large)
+data/*.rds
+data/*.Rds
+data/*.rda
+data/*.Rda
+
+# RStudio / session artifacts
+.Rhistory
+.RData
+.Rproj.user/
+
+# Figures (optional to ignore; remove if you want to commit them)
+figures/
