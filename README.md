@@ -1,14 +1,15 @@
-# BIOS 731 HW2 – Simulation study (Bootstrap CIs)
+# BIOS 731 HW2 – Simulation study (Bootstrap Confidence intervals)
 
 Author: Xinyu Dong
 
 ## Folder structure
 
-- `analysis/` : reproducible report (.Rmd)
-- `source/` : reusable functions (DGM, CI methods, summaries, plots)
-- `simulations/` : script to run the full simulation study
-- `data/` : simulation outputs (`.rds`) — **ignored by git**
-- `figures/` : optional saved figures
+-   `analysis/` : final reproducible report (`.rmd`)
+-   `source/` : master scripts to execute the full simulation study
+-   `simulations/` : step-by-step scripts and reusable functions to complete the simulation and provide visualization and tabular results
+-   `data/` : saved intermediate results (scenario-wise `.rds` and combined `.rds`)
+-   `figures/` : visualization plots saved for this report
+
 
 ## How to run (end-to-end)
 
@@ -28,3 +29,5 @@ Author: Xinyu Dong
 
 Bootstrap-t uses a nested bootstrap (B=500 outer, B_inner=100 inner), so it can be slow,
 especially for `n=500`. The simulation script parallelizes across the 18 scenarios.
+
+*To accommendate for excessive computational time, I employed B=50 outer, B_inner=100 inner*
